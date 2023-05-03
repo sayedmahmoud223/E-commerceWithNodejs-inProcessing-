@@ -4,7 +4,8 @@ export let addCouponSchema = joi.object({
     couponName:joi.string().min(2).max(12).required(),
     expireDate:joi.date().greater(Date.now()).required(),
     amount:joi.number().positive().min(1).max(100).required(),
-    couponId:generalValidation.id,
+    couponId:generalValidation.optionalId,
+    token:joi.string(),
     file: generalValidation.file,
 }).required()
 export let updateCouponSchema = joi.object({

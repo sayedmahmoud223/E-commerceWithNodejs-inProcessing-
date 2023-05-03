@@ -5,6 +5,20 @@ import { subCategoryModel } from "../../../../DB/Models/subCategory.Model.js"
 import { brandModel } from "../../../../DB/Models/brand.Model.js"
 import { nanoid } from "nanoid";
 import { productModel } from "../../../../DB/Models/product.Model.js";
+import { userModel } from "../../../../DB/Models/User.Model.js";
+import { ApiFeatures } from "../../../utils/ApiFeaturesClass.js";
+
+
+
+export let getAllProducts = async (req, res, next) => {
+    let apiObj = new ApiFeatures(productModel.find().populate([{
+        path: "reviews"
+    }]), req.query).filter().paginate().sort().search().select()
+    let products = await apiObj.mongooseQuery
+    return res.status(200).json({ message: "success", products })
+}
+
+
 
 export let addProduct = async (req, res, next) => {
     let { _id } = req.user
@@ -32,7 +46,6 @@ export let addProduct = async (req, res, next) => {
     return res.status(201).json({ message: "success", product })
 
 }
-
 
 
 export let updateProduct = async (req, res, next) => {
@@ -70,7 +83,7 @@ export let updateProduct = async (req, res, next) => {
         req.body.subImages = []
         for (const image of req.files.subImages) {
             let { secure_url, public_id, folder } = await cloudinary.uploader.upload(image.path, { folder: `${process.env.folderName}/Product/${product.customId}/SubImages` })
-            product.subImages.map((ele)=>{cloudinary.uploader.destroy(ele.public_id)})
+            product.subImages.map((ele) => { cloudinary.uploader.destroy(ele.public_id) })
             req.body.subImages.push({ secure_url, public_id, folder })
         }
     }
@@ -80,4 +93,37 @@ export let updateProduct = async (req, res, next) => {
 
 }
 
+
+export let wishList = async (req, res, next) => {
+    let { productId } = req.params
+    let { _id } = req.user
+    if (!await productModel.findOne({ _id: productId, isDeleted: false })) {
+        return next(new ResError("In-valid product", 400));
+    }
+    await userModel.updateOne({ _id }, { $push: { wishList: productId } })
+    return res.status(200).json({ message: "success" })
+
+}
+
+
+export let removeFromWishlist = async (req, res, next) => {
+    let { productId } = req.params
+    let { _id } = req.user
+    if (!await productModel.findOne({ _id: productId, isDeleted: false })) {
+        return next(new ResError("In-valid product", 400));
+    }
+    await userModel.updateOne({ _id }, { $pull: { wishList: productId } })
+    return res.status(200).json({ message: "success" })
+
+}
+
+
+export let getUserWishList = async (req, res, next) => {
+    let user = await userModel.find().populate([
+        {
+            path: "wishList"
+        }
+    ])
+    return res.status(200).json({ message: "success", user })
+}
 

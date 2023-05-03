@@ -19,6 +19,9 @@ export let globalError = (err, req, res, next) => {
     if (err) {
         let message = err.message;
         let statusCode = err.status || 500;
-        return res.status(statusCode).json({ "message": message, stack: err.stack })
+        if (process.env.MOOD == "dev") {
+            return res.status(statusCode).json({ "message": message, stack: err.stack })
+        }
+        return res.status(statusCode).json({ "message": message })
     }
 }

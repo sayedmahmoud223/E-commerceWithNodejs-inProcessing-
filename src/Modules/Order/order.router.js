@@ -7,6 +7,9 @@ import { endPoint } from "./order.endPoint.js";
 let router = Router();
 
 router.post("/", checkAuth(endPoint.create), asyncHandler(orderController.createOrder))
+router.patch("/:orderId", checkAuth(endPoint.create), asyncHandler(orderController.cancelOrder))
+router.patch("/:orderId/delivered", checkAuth(endPoint.delivered), asyncHandler(orderController.deliveredOrder))
+router.get("/payment/cancel", asyncHandler(orderController.cancelPayment))
 
 
 

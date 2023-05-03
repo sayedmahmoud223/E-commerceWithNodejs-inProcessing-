@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from "mongoose"
+import mongoose, { Schema, Types, model } from "mongoose"
 
 let userSchema = Schema({
     userName: {
@@ -44,8 +44,11 @@ let userSchema = Schema({
         default: "Offline",
         enum: ["Offline", "Online", "Blocked"]
     },
+    wishList: [{ type: Types.ObjectId, ref: "Product" }]
 
 }, { timestamps: true })
+
+
 
 
 export let userModel = mongoose.models.User || model("User", userSchema) 

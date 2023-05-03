@@ -19,6 +19,7 @@ export let addProductSchema = joi.object({
     }).required(),
     token: joi.string()
 }).required()
+
 export let updateProductSchema = joi.object({
     productId: generalValidation.id,
     productName: joi.string().min(3).max(150),
@@ -35,5 +36,10 @@ export let updateProductSchema = joi.object({
         mainImage: joi.array().items(generalValidation.file).length(1),
         subImages: joi.array().items(generalValidation.file).max(5)
     }),
+    token: joi.string()
+}).required()
+
+export let wishListSchema = joi.object({
+    productId: generalValidation.id,
     token: joi.string()
 }).required()
