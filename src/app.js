@@ -7,8 +7,15 @@ import product from "./Modules/Product/product.router.js"
 import cart from "./Modules/cart/cart.router.js"
 import order from "./Modules/Order/order.router.js"
 import morgan from "morgan";
-
+import { graphqlHTTP } from "express-graphql"
+import { productSchema } from "./Modules/Product/GraphQl/Schema.js";
 export let initApp = (app, express) => {
+
+    // graphQl
+    app.use("/graphQl", graphqlHTTP({
+        schema: productSchema,
+        graphiql: true
+    }))
 
     app.use(morgan("dev"));
     app.use(express.json());
